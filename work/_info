@@ -1,0 +1,202 @@
+m255
+K3
+13
+cModel Technology
+dC:\Users\evezers\Desktop\cnt_sim
+Ebosch_wlf24271ce
+Z0 w1665943124
+Z1 DPx4 ieee 11 numeric_std 0 22 O3PF8EB`?j9=z7KT`fn941
+Z2 DPx4 work 12 sevenseg_pkg 0 22 YMF^`ah66Efh5@UWf[jVo0
+Z3 DPx3 std 6 textio 0 22 5>J:;AW>W0[[dW0I6EN1Q0
+Z4 DPx4 ieee 14 std_logic_1164 0 22 5=aWaoGZSMWIcH0i^f`XF1
+Z5 dD:\FPGA\Bosch_WLF24271CE
+Z6 8D:/FPGA/Bosch_WLF24271CE/Bosch_WLF24271CE.vhd
+Z7 FD:/FPGA/Bosch_WLF24271CE/Bosch_WLF24271CE.vhd
+l0
+L6
+VoDg3oak3ZXLiQPU:]ZdFN1
+!s100 <JJ[MU6S7:ZZ>_4ndbXGd1
+Z8 OV;C;10.1d;51
+32
+!i10b 1
+Z9 !s108 1665943697.770000
+Z10 !s90 -reportprogress|300|-work|work|-2002|-explicit|D:/FPGA/Bosch_WLF24271CE/Bosch_WLF24271CE.vhd|
+Z11 !s107 D:/FPGA/Bosch_WLF24271CE/Bosch_WLF24271CE.vhd|
+Z12 o-work work -2002 -explicit -O0
+Z13 tExplicit 1
+Aa_bosch_wlf24271ce
+R1
+R2
+R3
+R4
+Z14 DEx4 work 16 bosch_wlf24271ce 0 22 oDg3oak3ZXLiQPU:]ZdFN1
+l28
+L17
+Z15 VYXP6>4]AS?f>3hdRF6hTb2
+Z16 !s100 Z_zVlXl0gjMF:FL:Alc2<1
+R8
+32
+!i10b 1
+R9
+R10
+R11
+R12
+R13
+Edisp
+Z17 w1665925048
+R1
+R3
+R4
+Z18 DPx4 work 7 mytypes 0 22 GVWQNjZiERnA:DM2:1Ncb1
+R5
+Z19 8D:/FPGA/Bosch_WLF24271CE/disp.vhd
+Z20 FD:/FPGA/Bosch_WLF24271CE/disp.vhd
+l0
+L14
+VDeOL?;J1Li>DzFC:0RGzY3
+R8
+33
+Z21 !s108 1665925065.718000
+Z22 !s90 -reportprogress|300|-work|work|-2008|-explicit|D:/FPGA/Bosch_WLF24271CE/disp.vhd|
+Z23 !s107 D:/FPGA/Bosch_WLF24271CE/disp.vhd|
+Z24 o-work work -2008 -explicit -O0
+R13
+!s100 bFc2`@fh4oAEg`VzGX_GB3
+!i10b 1
+Adisp_a
+R1
+R3
+R4
+R18
+DEx4 work 4 disp 0 22 DeOL?;J1Li>DzFC:0RGzY3
+l45
+L23
+VceBC?1G^hj=QcW[Pk=kJh0
+R8
+33
+R21
+R22
+R23
+R24
+R13
+!s100 ThjO>FkL4R2>Jj?noK7fz2
+!i10b 1
+Pmytypes
+R1
+R3
+R4
+R17
+R5
+R19
+R20
+l0
+L5
+VGVWQNjZiERnA:DM2:1Ncb1
+R8
+33
+R21
+R22
+R23
+R24
+R13
+!s100 5njl7FYHBlAKRFR;g6PCO3
+!i10b 1
+Esevenseg_digit
+Z25 w1665943089
+R2
+R1
+R3
+R4
+R5
+Z26 8D:/FPGA/Bosch_WLF24271CE/sevenseg_digit.vhd
+Z27 FD:/FPGA/Bosch_WLF24271CE/sevenseg_digit.vhd
+l0
+L19
+V`T`znnh?L?`0<b?]=cJ3V3
+R8
+32
+Z28 !s108 1665943697.678000
+Z29 !s90 -reportprogress|300|-work|work|-2002|-explicit|D:/FPGA/Bosch_WLF24271CE/sevenseg_digit.vhd|
+Z30 !s107 D:/FPGA/Bosch_WLF24271CE/sevenseg_digit.vhd|
+R12
+R13
+!s100 ?YV2YZ?g>z>fE`PIFdm<h2
+!i10b 1
+Asevenseg_digit_a
+R2
+R1
+R3
+R4
+Z31 DEx4 work 14 sevenseg_digit 0 22 `T`znnh?L?`0<b?]=cJ3V3
+l51
+L27
+VKFSe3K0g10Sgo^k_;e>;W0
+R8
+32
+R28
+R29
+R30
+R12
+R13
+!s100 bNX_0QNcR2ZXKB^je8fH22
+!i10b 1
+Esevenseg_display
+Z32 w1665943096
+R2
+R1
+R3
+R4
+R5
+Z33 8D:/FPGA/Bosch_WLF24271CE/sevenseg_display.vhd
+Z34 FD:/FPGA/Bosch_WLF24271CE/sevenseg_display.vhd
+l0
+L7
+VkSZ3[>BRW_OZ:WgTh@jAj3
+R8
+32
+Z35 !s108 1665943697.723000
+Z36 !s90 -reportprogress|300|-work|work|-2002|-explicit|D:/FPGA/Bosch_WLF24271CE/sevenseg_display.vhd|
+Z37 !s107 D:/FPGA/Bosch_WLF24271CE/sevenseg_display.vhd|
+R12
+R13
+!s100 BZK5T1JO<n^J1dl@GM?_I0
+!i10b 1
+Asevenseg_display_a
+R31
+R2
+R1
+R3
+R4
+DEx4 work 16 sevenseg_display 0 22 kSZ3[>BRW_OZ:WgTh@jAj3
+l21
+L17
+V6Y[7od53]caddBdbz^i2[3
+!s100 No3TR35X>40X[J10Fc:W>2
+R8
+32
+R35
+R36
+R37
+R12
+R13
+!i10b 1
+Psevenseg_pkg
+R1
+R3
+R4
+w1665942270
+R5
+8D:/FPGA/Bosch_WLF24271CE/sevenseg_types.vhd
+FD:/FPGA/Bosch_WLF24271CE/sevenseg_types.vhd
+l0
+L5
+VYMF^`ah66Efh5@UWf[jVo0
+R8
+32
+R12
+R13
+!s100 I0TWiAGO@E6ONVomZHh;]1
+!i10b 1
+!s108 1665943697.636000
+!s90 -reportprogress|300|-work|work|-2002|-explicit|D:/FPGA/Bosch_WLF24271CE/sevenseg_types.vhd|
+!s107 D:/FPGA/Bosch_WLF24271CE/sevenseg_types.vhd|
