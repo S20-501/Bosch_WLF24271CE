@@ -11,6 +11,7 @@ entity Bosch_WLF24271CE is
 		DS_EN1, DS_EN2, DS_EN3, DS_EN4: out std_logic;
 		--input keys
 	 	KEY1,KEY2,KEY3,KEY4: in std_logic;
+		V_R: out std_logic_vector(4 downto 0);
 		-- beeper
 		BP1: inout std_logic
 		);
@@ -32,12 +33,19 @@ component sevenseg_display is
 end component;
 component beeper is
       port (
-          clock: in std_logic;
-          frequency_r: natural range 0 to 48000000;
-          beep_s: inout std_logic
+		  clock: in std_logic;
+		  frequency_r: natural range 0 to 48000000;
+		  enabled: in std_logic;
+		  beep_s: inout std_logic
       );
 end component;
 begin
+		V_R(4) <= '1';
+		V_R(3) <= '1';
+		V_R(2) <= '1';
+		V_R(1) <= '1';
+		V_R(0) <= '1';
+
 		DISP_P: sevenseg_display port map(
 				clock => CLK,
 				sevenseg_value_r => sevenseg_value_r,
@@ -57,14 +65,15 @@ begin
 		BEEP_P: beeper port map(
 				clock => CLK,
 				frequency_r => frequency_beep_r,
-				beep_s => BP1
+				beep_s => BP1,
+				enabled => '0'
 		);
-		
+
 		frequency_up : process(CLK)
 		 begin
 			  if (rising_edge(CLK)) then
 					frequency_counter <= frequency_counter + 1;
-					
+
 					if (frequency_counter = 0) then
 						 frequency_beep_r <= frequency_beep_r - 1;
 					end if;
