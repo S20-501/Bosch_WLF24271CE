@@ -27,6 +27,8 @@ begin
 
 		        beep_s <= beep_clk_r;
             end if;
+        else
+            beep_s <= '1';
         end if;
     end process;
 end architecture;

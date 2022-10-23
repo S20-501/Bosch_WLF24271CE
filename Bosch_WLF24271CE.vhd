@@ -5,7 +5,6 @@ use work.sevenseg_pkg.all;
 
 entity Bosch_WLF24271CE is
 	port(CLK: in std_logic;
-	 reset : in std_logic;
 	--sevenseg leds
 	DS_G, DS_F, DS_E, DS_D, DS_C, DS_B, DS_A: out std_logic;
 	-- digit enable leds
@@ -18,17 +17,21 @@ entity Bosch_WLF24271CE is
 	: in std_logic;
 	V_R: out std_logic_vector(4 downto 0);
 	-- beeper
-	BP1: out std_logic;
+	BP1: out std_logic
 
-	door_lock_s:in std_logic;
-	door_locked_s:out std_logic;
-	drain_pressure_ok_s: in std_logic;
-	water_pressure_ok_s: in std_logic;
-	engine_ok_s: in std_logic
+
 	);
 end entity Bosch_WLF24271CE;
 
 architecture A_Bosch_WLF24271CE of Bosch_WLF24271CE is
+
+signal door_lock_s: std_logic;
+	signal door_locked_s: std_logic;
+	signal drain_pressure_ok_s:  std_logic;
+	signal water_pressure_ok_s:  std_logic;
+	signal engine_ok_s:  std_logic;
+
+
 	signal sevenseg_value_r: charset_vector_t(3 downto 0) := "Cold";
 	signal clock_divider_counter: natural range 0 to 10000 := 0;
 
@@ -56,14 +59,14 @@ architecture A_Bosch_WLF24271CE of Bosch_WLF24271CE is
 	    sevenseg_bus_s:out std_logic_vector(6 downto 0)
 	    );
 	end component;
-	component beeper is
-	      port (
-			  clock: in std_logic;
-			  frequency_r: natural range 0 to 48000000;
-			  enabled_s: in std_logic;
-			  beep_s: out std_logic
-	      );
-	end component;
+	-- component beeper is
+	--       port (
+	-- 		  clock: in std_logic;
+	-- 		  frequency_r: natural range 0 to 48000000;
+	-- 		  enabled_s: in std_logic;
+	-- 		  beep_s: out std_logic
+	--       );
+	-- end component;
 	component fsm_states
 		port (
 		  clock                : in  std_logic;
@@ -72,7 +75,8 @@ architecture A_Bosch_WLF24271CE of Bosch_WLF24271CE is
 		  temperature_button_s : in  std_logic;
 		  speed_button_s       : in  std_logic;
 		  fsm_prg_sink_enabled_s    : out std_logic;
-		  sink_s               : out std_logic
+		  sink_s               : out std_logic;
+		  sevenseg_value_s: out charset_vector_t(3 downto 0)
 		);
 	end component fsm_states;
 	-- component fsm_prg_sink
@@ -98,6 +102,7 @@ begin
 	V_R(2) <= '1';
 	V_R(1) <= '1';
 	V_R(0) <= '1';
+	BP1 <= '1';
 
 	clock_divider_i : clock_divider
 	port map (
@@ -123,22 +128,23 @@ begin
 		sevenseg_bus_s(6) => DS_G
 	);
 
-	BEEP_P: beeper port map(
-		clock => CLK,
-		frequency_r => frequency_beep_r,
-		beep_s => BP1,
-		enabled_s => '0'
-	);
+	-- BEEP_P: beeper port map(
+	-- 	clock => CLK,
+	-- 	frequency_r => frequency_beep_r,
+	-- 	beep_s => BP1,
+	-- 	enabled_s => '0'
+	-- );
 
 	fsm_states_i : fsm_states
 	port map (
 	  clock                => clock_2hz,
-	  start_button_s       => KEY1,
-	  sink_button_s        => KEY2,
-	  temperature_button_s => KEY3,
-	  speed_button_s       => KEY4,
+	  start_button_s       => not KEY1,
+	  sink_button_s        => not KEY2,
+	  temperature_button_s => not KEY3,
+	  speed_button_s       => not KEY4,
 	  fsm_prg_sink_enabled_s    => fsm_prg_sink_enabled_s,
-	  sink_s               => sink_s
+	  sink_s               => sink_s,
+	  sevenseg_value_s => sevenseg_value_r
 	);
 
 	-- fsm_prg_sink_i : fsm_prg_sink
@@ -160,16 +166,16 @@ begin
 	-- );
 
 
-	frequency_up : process(CLK)
-	begin
-	  if (rising_edge(CLK)) then
-			frequency_counter <= frequency_counter + 1;
-
-			if (frequency_counter = 0) then
-				 frequency_beep_r <= frequency_beep_r - 1;
-			end if;
-	  end if;
-	end process;
+--	frequency_up : process(CLK)
+--	begin
+--	  if (rising_edge(CLK)) then
+--			frequency_counter <= frequency_counter + 1;
+--
+--			if (frequency_counter = 0) then
+--				 frequency_beep_r <= frequency_beep_r - 1;
+--			end if;
+--	  end if;
+--	end process;
 
 
 end architecture A_Bosch_WLF24271CE;

@@ -157,7 +157,6 @@ set_global_assignment -name NUM_PARALLEL_PROCESSORS 16
 
 set_global_assignment -name VHDL_FILE clock_divider.vhd
 set_global_assignment -name VHDL_FILE fsm_states.vhd
-set_global_assignment -name VHDL_FILE beeper.vhd
 set_global_assignment -name VHDL_FILE sevenseg_types.vhd
 set_global_assignment -name VHDL_FILE sevenseg_display.vhd
 set_global_assignment -name VHDL_FILE sevenseg_digit.vhd
