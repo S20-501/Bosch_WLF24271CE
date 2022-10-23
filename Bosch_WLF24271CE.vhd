@@ -10,10 +10,10 @@ entity Bosch_WLF24271CE is
 	-- digit enable leds
 	DS_EN1, DS_EN2, DS_EN3, DS_EN4: out std_logic;
 	--input keys
- 	KEY1,--start
-	KEY2,--sink
-	KEY3,-- speed
-	KEY4 -- temper
+ 	KEY1,--temper
+	KEY2,-- ?
+	KEY3,-- ?
+	KEY4 -- speed
 	: in std_logic;
 	V_R: out std_logic_vector(4 downto 0);
 	-- beeper

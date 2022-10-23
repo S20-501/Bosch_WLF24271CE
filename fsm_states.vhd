@@ -71,7 +71,7 @@ architecture fsm_states_a of fsm_states is
 
     type fsm_state_t is
       (POWER_ON_STATE, CONFIG_STATE,
-      SPEED_CONFIG_STATE, TEMPERATURE_CONFIG_STATE,
+      SPEED_CONFIG_STATE, TEMPERATURE_CONFIG_STATE, -- TIME_CONFIG_STATE,
       START_STATE
       );
 
@@ -85,8 +85,7 @@ architecture fsm_states_a of fsm_states is
     signal start_r: std_logic := '0';
     signal sink_r: std_logic := '0';
 
-    -- must be enums!!!
-    signal speed_r: speed_enum_t := speed_200; -- how to convert?
+    signal speed_r: speed_enum_t := speed_200;
     signal temperature_r: temperature_enum_t := t30C;
 begin
     fsm_state_p : process(clock, fsm_state, timer_counter, start_r,
@@ -101,13 +100,11 @@ begin
                 end if;
 
             when CONFIG_STATE =>
-                -- if (timer_counter = 0) then
-                    if (start_r = '1') then
-                        fsm_state_next <= START_STATE;
-                    else
-                        fsm_state_next <= SPEED_CONFIG_STATE;
-                    end if;
-                -- end if;
+                if (start_r = '1') then
+                    fsm_state_next <= START_STATE;
+                else
+                    fsm_state_next <= SPEED_CONFIG_STATE;
+                end if;
 
             when SPEED_CONFIG_STATE =>
                 if (timer_counter = 0) then
@@ -152,9 +149,6 @@ begin
                 end if;
 
             when CONFIG_STATE =>
---                if (timer_counter = 0) then
---                    timer_counter <= 2;
---                end if;
 
             when SPEED_CONFIG_STATE =>
                 sevenseg_value_s <= speed_disp_map(speed_r);
