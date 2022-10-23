@@ -60,7 +60,7 @@ architecture A_Bosch_WLF24271CE of Bosch_WLF24271CE is
 	      port (
 			  clock: in std_logic;
 			  frequency_r: natural range 0 to 48000000;
-			  enabled: in std_logic;
+			  enabled_s: in std_logic;
 			  beep_s: out std_logic
 	      );
 	end component;
@@ -75,23 +75,23 @@ architecture A_Bosch_WLF24271CE of Bosch_WLF24271CE is
 		  sink_s               : out std_logic
 		);
 	end component fsm_states;
-	component fsm_prg_sink
-		port (
-		  clock                : in  std_logic;
-		  door_lock_s          : in  std_logic;
-		  door_locked_s        : out std_logic;
-		  start_button_s       : in  std_logic;
-		  sink_button_s        : in  std_logic;
-		  drain_pressure_ok_s  : in  std_logic;
-		  water_pressure_ok_s  : in  std_logic;
-		  sink_s               : in  std_logic;
-		  engine_ok_s          : in  std_logic;
-		  temperature_button_s : in  std_logic;
-		  speed_button_s       : in  std_logic;
-		  enable_s             : in  std_logic;
-		  end_s                : out std_logic
-		);
-	end component fsm_prg_sink;
+	-- component fsm_prg_sink
+	-- 	port (
+	-- 	  clock                : in  std_logic;
+	-- 	  door_lock_s          : in  std_logic;
+	-- 	  door_locked_s        : out std_logic;
+	-- 	  start_button_s       : in  std_logic;
+	-- 	  sink_button_s        : in  std_logic;
+	-- 	  drain_pressure_ok_s  : in  std_logic;
+	-- 	  water_pressure_ok_s  : in  std_logic;
+	-- 	  sink_s               : in  std_logic;
+	-- 	  engine_ok_s          : in  std_logic;
+	-- 	  temperature_button_s : in  std_logic;
+	-- 	  speed_button_s       : in  std_logic;
+	-- 	  enable_s             : in  std_logic;
+	-- 	  end_s                : out std_logic
+	-- 	);
+	-- end component fsm_prg_sink;
 begin
 	V_R(4) <= '1';
 	V_R(3) <= '1';
@@ -127,7 +127,7 @@ begin
 		clock => CLK,
 		frequency_r => frequency_beep_r,
 		beep_s => BP1,
-		enabled => '0'
+		enabled_s => '0'
 	);
 
 	fsm_states_i : fsm_states
@@ -141,23 +141,23 @@ begin
 	  sink_s               => sink_s
 	);
 
-	fsm_prg_sink_i : fsm_prg_sink
-	port map (
-	  clock                => clock_2hz,
-	  start_button_s       => KEY1,
-	  sink_button_s        => KEY2,
-	  temperature_button_s => KEY3,
-	  speed_button_s       => KEY4,
-
-	  door_lock_s          => door_lock_s,
-	  door_locked_s        => door_locked_s,
-	  drain_pressure_ok_s  => drain_pressure_ok_s,
-	  water_pressure_ok_s  => water_pressure_ok_s,
-	  sink_s               => sink_s,
-	  engine_ok_s          => engine_ok_s,
-	  enable_s             => fsm_prg_sink_enabled_s,
-	  end_s                => end_s
-	);
+	-- fsm_prg_sink_i : fsm_prg_sink
+	-- port map (
+	--   clock                => clock_2hz,
+	--   start_button_s       => KEY1,
+	--   sink_button_s        => KEY2,
+	--   temperature_button_s => KEY3,
+	--   speed_button_s       => KEY4,
+	--
+	--   door_lock_s          => door_lock_s,
+	--   door_locked_s        => door_locked_s,
+	--   drain_pressure_ok_s  => drain_pressure_ok_s,
+	--   water_pressure_ok_s  => water_pressure_ok_s,
+	--   sink_s               => sink_s,
+	--   engine_ok_s          => engine_ok_s,
+	--   enable_s             => fsm_prg_sink_enabled_s,
+	--   end_s                => end_s
+	-- );
 
 
 	frequency_up : process(CLK)
