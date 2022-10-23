@@ -127,7 +127,7 @@ architecture fsm_states_a of fsm_states is
     signal sink_r: std_logic := '0';
 
     -- must be enums!!!
-    signal speed_r: natural range 200 to 1200 := 200; -- how to convert?
+    signal speed_r: speed_enum_t := speed_200; -- how to convert?
     signal temperature_r: natural range 30 to 90 := 30;
 begin
     fsm_state_p : process(clock, fsm_state, timer_counter, start_r,
@@ -202,7 +202,8 @@ begin
                 -- sevenseg_value_r <= "1200"; -- TODO: display current speed setting! speed_r
 
                 if (speed_button_s = '1') then
-                    speed_r <=+ 200;
+                    speed_r <= speed_enum_t'succ(speed_r);
+                    -- speed_r <=+ 200;
                     config_changed_r <= '1';
                 end if;
 
