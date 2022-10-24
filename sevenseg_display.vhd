@@ -7,10 +7,12 @@ use work.sevenseg_pkg.all;
 entity sevenseg_display is
     port (
     clock: in std_logic;
-    -- reset: in std_logic;
     sevenseg_value_r: in charset_vector_t(3 downto 0);
+    sevenseg_points_s:in std_logic_vector(2 downto 0);
+    sevenseg_colon_s: in std_logic;
     sevenseg_enabled_digit_s: out std_logic_vector(3 downto 0);
-    sevenseg_bus_s:out std_logic_vector(6 downto 0)
+    sevenseg_bus_s:out std_logic_vector(6 downto 0);
+    sevenseg_point_s: out std_logic
     );
 end entity;
 
@@ -43,4 +45,10 @@ begin
         "1011" when 1,
         "1101" when 2,
         "1110" when 3;
+
+    with current_digit_counter select sevenseg_point_s <=
+       sevenseg_points_s(0) when 0,
+       sevenseg_points_s(1) when 1,
+    sevenseg_colon_s    when 2,
+        sevenseg_points_s(2) when 3;
 end architecture;

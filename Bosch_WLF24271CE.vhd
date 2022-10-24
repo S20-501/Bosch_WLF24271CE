@@ -6,7 +6,7 @@ use work.sevenseg_pkg.all;
 entity Bosch_WLF24271CE is
 	port(CLK: in std_logic;
 	--sevenseg leds
-	DS_G, DS_F, DS_E, DS_D, DS_C, DS_B, DS_A: out std_logic;
+	DS_DP, DS_G, DS_F, DS_E, DS_D, DS_C, DS_B, DS_A: out std_logic;
 	-- digit enable leds
 	DS_EN1, DS_EN2, DS_EN3, DS_EN4: out std_logic;
 	--input keys
@@ -40,6 +40,9 @@ signal door_lock_s: std_logic;
 
 	signal engine_enabled_r: std_logic;
 
+	signal sevenseg_points_r:  std_logic_vector(2 downto 0);
+   signal time_divider_r:  std_logic;
+
 	signal start_r: std_logic := '0'; -- 0 pause, 1 start
 	signal speed_r: speed_enum_t := speed_200;
 	signal temperature_r: temperature_enum_t := t30C;
@@ -54,14 +57,18 @@ signal door_lock_s: std_logic;
 	    );
 	end component;
 
-	component sevenseg_display is
-	    port (
-	    clock: in std_logic;
-	    sevenseg_value_r: in charset_vector_t(3 downto 0);
-	    sevenseg_enabled_digit_s: out std_logic_vector(3 downto 0);
-	    sevenseg_bus_s:out std_logic_vector(6 downto 0)
-	    );
-	end component;
+	component sevenseg_display
+	port (
+	  clock                    : in  std_logic;
+	  sevenseg_value_r         : in  charset_vector_t(3 downto 0);
+	  sevenseg_points_s        : in  std_logic_vector(2 downto 0);
+	  sevenseg_colon_s         : in  std_logic;
+	  sevenseg_enabled_digit_s : out std_logic_vector(3 downto 0);
+	  sevenseg_bus_s           : out std_logic_vector(6 downto 0);
+	  sevenseg_point_s         : out std_logic
+	);
+	end component sevenseg_display;
+
 	component beeper is
 	      port (
 			  clock: in std_logic;
@@ -83,19 +90,26 @@ signal door_lock_s: std_logic;
 
 	component fsm_states
 		port (
-		  clock                : in  std_logic;
-		  start_button_s       : in  std_logic;
-		  sink_button_s        : in  std_logic;
-		  temperature_button_s : in  std_logic;
-		  speed_button_s       : in  std_logic;
-		  fsm_prg_sink_enabled_s    : out std_logic;
-		  sink_s               : out std_logic;
-		  sevenseg_value_s: out charset_vector_t(3 downto 0);
-		  start_s: out std_logic; -- 0 pause, 1 start
-          speed_s: out speed_enum_t;
-          temperature_s: out temperature_enum_t
+			clock                  : in  std_logic;
+			start_button_s         : in  std_logic;
+			sink_button_s          : in  std_logic;
+			temperature_button_s   : in  std_logic;
+			speed_button_s         : in  std_logic;
+			fsm_prg_sink_enabled_s : out std_logic := '0';
+			sink_s                 : out std_logic := '0';
+			sevenseg_value_s       : out charset_vector_t(3 downto 0);
+			start_s                : out std_logic := '0';
+			speed_s                : out speed_enum_t := speed_200;
+			temperature_s          : out temperature_enum_t := t30C;
+			time_divider_s         : out std_logic;
+			washing_led_s          : out std_logic;
+			sinking_led_s          : out std_logic;
+			end_led_s              : out std_logic;
+			start_led_s            : out std_logic;
+			sink_led_s             : out std_logic
 		);
 	end component fsm_states;
+
 	-- component fsm_prg_sink
 	-- 	port (
 	-- 	  clock                : in  std_logic;
@@ -114,11 +128,7 @@ signal door_lock_s: std_logic;
 	-- 	);
 	-- end component fsm_prg_sink;
 begin
-	V_R(4) <= '1';
-	V_R(3) <= '1';
-	V_R(2) <= '1';
-	V_R(1) <= '1';
-	V_R(0) <= engine_enabled_r;
+	sevenseg_points_r(0) <= engine_enabled_r;
 
 	clock_divider_i : clock_divider
 	port map (
@@ -131,6 +141,8 @@ begin
 	DISP_P: sevenseg_display port map(
 		clock => CLK,
 		sevenseg_value_r => sevenseg_value_r,
+		sevenseg_points_s        => sevenseg_points_r,
+  	  	sevenseg_colon_s         => time_divider_r,
 		sevenseg_enabled_digit_s(0) => DS_EN1,
 		sevenseg_enabled_digit_s(1) => DS_EN2,
 		sevenseg_enabled_digit_s(2) => DS_EN3,
@@ -141,7 +153,8 @@ begin
 		sevenseg_bus_s(3) => DS_D,
 		sevenseg_bus_s(4) => DS_E,
 		sevenseg_bus_s(5) => DS_F,
-		sevenseg_bus_s(6) => DS_G
+		sevenseg_bus_s(6) => DS_G,
+		sevenseg_point_s  => DS_DP
 	);
 
 	BEEP_P: beeper port map(
@@ -174,7 +187,13 @@ begin
 	  sevenseg_value_s => sevenseg_value_r,
 	  start_s => start_r,
 	  speed_s => speed_r,
-	  temperature_s => temperature_r
+	  temperature_s => temperature_r,
+	  time_divider_s         => time_divider_r,
+	  washing_led_s          => V_R(4),
+	  sinking_led_s          => V_R(3),
+	  end_led_s              => V_R(2),
+	  start_led_s            => V_R(1),
+	  sink_led_s             => V_R(0)
 	);
 
 	-- fsm_prg_sink_i : fsm_prg_sink

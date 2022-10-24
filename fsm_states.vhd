@@ -6,7 +6,7 @@ package sevenseg_pkg11 is
     subtype sevenseg_t is std_logic_vector(6 downto 0);
     type sevenseg_charset_t is
       ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-      'C', 'o', 'l', 'd', 'E', 'n', 'h', '-', ' ');
+      'C', 'o', 'l', 'd', 'E', 'n', 'h', '-', ' ', 'P', 'A', 'U', 'S');
 
     type charset_vector_t is array (natural range <>) of sevenseg_charset_t;
 
@@ -41,7 +41,17 @@ entity fsm_states is
 
         start_s: out std_logic := '0'; -- 0 pause, 1 start
         speed_s: out speed_enum_t := speed_200;
-        temperature_s: out temperature_enum_t := t30C
+        temperature_s: out temperature_enum_t := t30C;
+
+
+        time_divider_s: out std_logic;
+
+        washing_led_s: out std_logic;
+        sinking_led_s: out std_logic;
+        end_led_s: out std_logic;
+
+        start_led_s: out std_logic;
+        sink_led_s: out std_logic
     );
 end entity;
 
@@ -94,6 +104,20 @@ architecture fsm_states_a of fsm_states is
 
     signal speed_r: speed_enum_t := speed_200;
     signal temperature_r: temperature_enum_t := t30C;
+
+    signal washing_led_r: std_logic := '0';
+    signal end_led_r: std_logic := '0';
+
+    signal start_led_r: std_logic := '0';
+
+
+    signal rtc_enable: std_logic := '0';
+    signal rtc_counter: natural range 0 to 1000 := 0;
+    signal time_divider_r: std_logic := '0';
+
+    signal minute_units_r: natural range 0 to 9 := 0;
+    signal minute_tens_r: natural range 0 to 9 := 0;
+    signal hour_units_r: natural range 0 to 9 := 0;
 begin
     fsm_state_p : process(clock, fsm_state, timer_counter, start_r,
         config_changed_r, start_button_s, speed_button_s, temperature_button_s)
@@ -103,7 +127,7 @@ begin
         case(fsm_state) is
             when POWER_ON_STATE =>
                 if (timer_counter = 0) then
-                    fsm_state_next <= CONFIG_STATE;
+                    fsm_state_next <= START_STATE;
                 end if;
 
             when CONFIG_STATE =>
@@ -223,16 +247,53 @@ begin
              timer_counter <= timer_counter - 1;
          end if;
 
+        if (rtc_enable = '1') then
+            if (rtc_counter > 0) then
+                rtc_counter <= rtc_counter - 1;
+            else
+                rtc_counter <= 1;  -- should be timed to 1sec 32
+
+                if (minute_tens_r = 0 and minute_units_r = 0 and hour_units_r = 0) then
+                    rtc_enable <= '0';
+                else
+                    if minute_units_r > 0 then
+                        minute_units_r <= minute_units_r - 1;
+                    else
+    					minute_units_r <= 9;
+
+    					if minute_tens_r > 0 then
+                            minute_tens_r <= minute_tens_r - 1;
+                        else
+    						minute_tens_r <= 5;
+
+                            if hour_units_r > 0 then
+                                hour_units_r <= hour_units_r - 1;
+                            end if;
+                        end if;
+
+                    end if;
+                end if;
+            end if;
+        end if;
+
         case(fsm_state) is
             when POWER_ON_STATE =>
                 if (timer_counter = 0) then
-                    timer_counter <= 64;
+                    timer_counter <= 64; --1s
                 end if;
 
             when CONFIG_STATE =>
                 if (timer_counter = 0) then
-                    -- start_led <= not start_led; -- 0.5 s
+                    start_led_r <= not start_led_r;
+
+                    timer_counter <= 32; -- 0.5 s
+
+                    if (start_button_s = '1') then
+                        start_r <= '1';
+                    end if;
                 end if;
+
+                start_led_s <= start_led_r;
 
             when SPEED_CONFIG_STATE =>
                 sevenseg_value_s <= speed_disp_map(speed_r);
@@ -284,7 +345,12 @@ begin
                 end if;
 
             when START_STATE =>
-                -- start_led <= '1';
+                hour_units_r <= 2;
+                minute_tens_r <= 0;
+                minute_units_r <= 0;
+                rtc_enable <= '1';
+
+                start_led_s <= '1';
                 fsm_prg_sink_enabled_s <= '1';
 
                 if (start_button_s = '1') then
@@ -293,8 +359,21 @@ begin
 
 
             when TIME_DISPLAY_STATE =>
+                if (timer_counter = 0) then
+                    time_divider_r <= not time_divider_r;
+
+                    timer_counter <= 1; -- 0.5 s
+                end if;
+
+                time_divider_s <= time_divider_r;
+
+                sevenseg_value_s(3) <= ' ';
+                sevenseg_value_s(2) <= sevenseg_charset_t'VAL(hour_units_r);
+                sevenseg_value_s(1) <= sevenseg_charset_t'VAL(minute_tens_r);
+                sevenseg_value_s(0) <= sevenseg_charset_t'VAL(minute_units_r);
+
             when PAUSE_STATE =>
-                --sevenseg_value_s <= "PAUS"; -- add PAUS chars
+                sevenseg_value_s <= "PAUS";
                 if (start_button_s = '1') then
                     start_r <= '1';
                 end if;

@@ -48,6 +48,10 @@ architecture sevenseg_digit_a of sevenseg_digit is
     constant SEVENSEG_CHARACTER_h     : sevenseg_t := "1110100";
     constant SEVENSEG_CHARACTER_minus : sevenseg_t := "1000000";
     constant SEVENSEG_CHARACTER_space : sevenseg_t := "0000000";
+    constant SEVENSEG_CHARACTER_P     : sevenseg_t := "1110011";
+    constant SEVENSEG_CHARACTER_A     : sevenseg_t := "1110111";
+    constant SEVENSEG_CHARACTER_U     : sevenseg_t := "0111110";
+    constant SEVENSEG_CHARACTER_S     : sevenseg_t := "1101101";
 begin
     with sevenseg_in_s select sevenseg_out_s <=
         SEVENSEG_DIGIT_MAP(0) when '0',
@@ -68,7 +72,11 @@ begin
         SEVENSEG_CHARACTER_n when 'n',
         SEVENSEG_CHARACTER_h when 'h',
         SEVENSEG_CHARACTER_minus when '-',
-        SEVENSEG_CHARACTER_space when ' '
+        SEVENSEG_CHARACTER_space when ' ',
+        SEVENSEG_CHARACTER_P when 'P',
+        SEVENSEG_CHARACTER_A when 'A',
+        SEVENSEG_CHARACTER_U when 'U',
+        SEVENSEG_CHARACTER_S when 'S'
         ;
 
 end architecture;
