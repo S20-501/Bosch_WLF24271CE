@@ -9,4 +9,10 @@ package sevenseg_pkg is
       'C', 'o', 'l', 'd', 'E', 'n', 'h', '-', ' ');
 
     type charset_vector_t is array (natural range <>) of sevenseg_charset_t;
+
+    type speed_enum_t is
+         (speed_200, speed_400, speed_600, speed_800, speed_1000, speed_1200);
+
+     type temperature_enum_t is
+         (tColdC, t30C, t40C, t50C, t60C, t70C, t80C, t90C);
 end package;
