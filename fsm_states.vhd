@@ -290,7 +290,7 @@ begin
                 end_led_s <= '0';
                 washing_led_s <= '0';
                 sinking_led_s <= '0';
-                time_divider_r <= '0';
+                time_divider_s <= '0';
 
                 if (timer_counter = 0) then
                     timer_counter <= 64; --1s
