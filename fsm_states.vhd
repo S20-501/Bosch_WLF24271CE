@@ -60,10 +60,10 @@ architecture fsm_states_a of fsm_states is
         of charset_vector_t(3 downto 0);
 
     constant speed_disp_map : speed_disp_map_t := (
-        speed_200 =>  "200 ",
-        speed_400 => "400 ",
-        speed_600 =>  "600 ",
-        speed_800 =>  "800 ",
+        speed_200 =>  " 200",
+        speed_400 =>  " 400",
+        speed_600 =>  " 600",
+        speed_800 =>  " 800",
         speed_1000 =>  "1000",
         speed_1200 =>  "1200"
     );
@@ -120,18 +120,19 @@ architecture fsm_states_a of fsm_states is
     signal hour_units_r: natural range 0 to 9 := 0;
 begin
     fsm_state_p : process(clock, fsm_state, timer_counter, start_r,
-        config_changed_r, start_button_s, speed_button_s, temperature_button_s)
+        config_changed_r, start_button_s, speed_button_s, temperature_button_s,
+        minute_tens_r, minute_units_r, hour_units_r, rtc_enable)
     begin
 		fsm_state_next <= fsm_state;
 
         case(fsm_state) is
             when POWER_ON_STATE =>
                 if (timer_counter = 0) then
-                    fsm_state_next <= START_STATE;
+                    fsm_state_next <= CONFIG_STATE;
                 end if;
 
             when CONFIG_STATE =>
-                if (start_r = '1') then
+                if (start_button_s = '1') then
                     fsm_state_next <= START_STATE;
                 else
                     fsm_state_next <= SPEED_CONFIG_STATE;
@@ -164,56 +165,57 @@ begin
                         fsm_state_next <= TEMPERATURE_UPDATE_STATE;
                     elsif (start_button_s = '1') then
                         fsm_state_next <= PAUSE_STATE;
-                    --elsif (time_elapsed_counter = 0) then
-                        --fsm_state_next <= FINAL_STATE;
+                    elsif (minute_tens_r = 0 and minute_units_r = 0 and hour_units_r = 0) then
+                        fsm_state_next <= FINAL_STATE;
                     end if;
                 end if;
 
             when PAUSE_STATE => -- NEED TEST
-                -- if (timer_counter = 0) then
-                --     if (speed_button_s = '1') then
-                --         fsm_state_next <= SPEED_UPDATE_STATE;
-                --     elsif (temperature_button_s = '1') then
-                --         fsm_state_next <= TEMPERATURE_UPDATE_STATE;
-                --     elsif (start_button_s = '1') then
-                --         fsm_state_next <= RESUME_STATE;
-                --     end if;
-                -- end if;
+                if (timer_counter = 0) then
+                    if (speed_button_s = '1') then
+                        fsm_state_next <= SPEED_UPDATE_STATE;
+                    elsif (temperature_button_s = '1') then
+                        fsm_state_next <= TEMPERATURE_UPDATE_STATE;
+                    elsif (start_button_s = '1') then
+                        fsm_state_next <= TIME_DISPLAY_STATE; --RESUME_STATE
+                    end if;
+                end if;
             when FINAL_STATE => --NEED TEST, or just finalize
-                -- if (timer_counter = 0) then
+                -- if () then
                 --     if (speed_button_s = '1') then
                 --         fsm_state_next <= SPEED_UPDATE_STATE;
                 --     elsif (temperature_button_s = '1') then
                 --         fsm_state_next <= TEMPERATURE_UPDATE_STATE;
-                -- elsif
+                --     end if;
+                -- else
                 --     fsm_state_next <= START_STATE;
                 -- end if;
 
             when SPEED_UPDATE_STATE =>
-                -- if (timer_counter = 0) then
-                --     if (config_changed_r = '0') then
-                --         if (time_elapsed_counter = 0) then
-                --             fsm_state_next <= FINAL_STATE;
-                --         elsif (start_r = '1') then
-                --             fsm_state_next <= TIME_DISPLAY_STATE;
-                --         else
-                --             fsm_state_next <= PAUSE_STATE;
-                --         end if;
-                --     end if;
-                -- end if;
+                if (timer_counter = 0) then
+                    if (config_changed_r = '0') then
+                        if (minute_tens_r = 0 and minute_units_r = 0 and hour_units_r = 0) then
+                            fsm_state_next <= FINAL_STATE;
+                        elsif (rtc_enable = '1') then
+                            fsm_state_next <= TIME_DISPLAY_STATE;
+                        else
+                            fsm_state_next <= PAUSE_STATE;
+                        end if;
+                    end if;
+                end if;
 
             when TEMPERATURE_UPDATE_STATE =>
-                -- if (timer_counter = 0) then
-                --     if (config_changed_r = '0') then
-                --         if (time_elapsed_counter = 0) then
-                --             fsm_state_next <= FINAL_STATE;
-                --         elsif (start_r = '1') then
-                --             fsm_state_next <= TIME_DISPLAY_STATE;
-                --         else
-                --             fsm_state_next <= PAUSE_STATE;
-                --         end if;
-                --     end if;
-                -- end if;
+                if (timer_counter = 0) then
+                    if (config_changed_r = '0') then
+                        if (minute_tens_r = 0 and minute_units_r = 0 and hour_units_r = 0) then
+                            fsm_state_next <= FINAL_STATE;
+                        elsif (rtc_enable = '1') then
+                            fsm_state_next <= TIME_DISPLAY_STATE;
+                        else
+                            fsm_state_next <= PAUSE_STATE;
+                        end if;
+                    end if;
+                end if;
 
 
             -- final states
@@ -251,7 +253,7 @@ begin
             if (rtc_counter > 0) then
                 rtc_counter <= rtc_counter - 1;
             else
-                rtc_counter <= 1;  -- should be timed to 1sec 32
+                rtc_counter <= 32;  -- should be timed to 1min or 1sec
 
                 if (minute_tens_r = 0 and minute_units_r = 0 and hour_units_r = 0) then
                     rtc_enable <= '0';
@@ -362,7 +364,7 @@ begin
                 if (timer_counter = 0) then
                     time_divider_r <= not time_divider_r;
 
-                    timer_counter <= 1; -- 0.5 s
+                    timer_counter <= 16; -- 0.5 s
                 end if;
 
                 time_divider_s <= time_divider_r;
@@ -374,15 +376,30 @@ begin
 
             when PAUSE_STATE =>
                 sevenseg_value_s <= "PAUS";
-                if (start_button_s = '1') then
-                    start_r <= '1';
+                time_divider_s <= '0';
+
+                start_led_s <= start_led_r;
+
+                if (timer_counter = 0) then
+                    start_led_r <= not start_led_r;
+
+                    if (start_button_s = '1') then
+                        start_r <= '1';
+                    end if;
+
+                    timer_counter <= 16;
                 end if;
 
             when FINAL_STATE =>
-                sevenseg_value_s <= "End ";
+                sevenseg_value_s <= " End";
+                time_divider_s <= '0';
+
+                end_led_s <= end_led_r;
 
                 if (timer_counter = 0) then
-                    --end_led <= not end_led;
+                    end_led_r <= not end_led_r;
+
+                    timer_counter <= 16;
                 end if;
 
 
