@@ -48,6 +48,7 @@ signal door_lock_s: std_logic;
 	signal temperature_r: temperature_enum_t := t30C;
 
 	signal engine_acceleration_r: natural range 0 to 1200 := 10;
+	signal engine_acceleration_neg_sign_r: std_logic;
 
 	component clock_divider is
 	    port (
@@ -106,7 +107,9 @@ signal door_lock_s: std_logic;
 			sinking_led_s          : out std_logic;
 			end_led_s              : out std_logic;
 			start_led_s            : out std_logic;
-			sink_led_s             : out std_logic
+			sink_led_s             : out std_logic;
+			engine_acceleration_s: out natural range 0 to 1200;
+	        engine_acceleration_neg_sign_s: out std_logic -- 0 positive, 1 negative
 		);
 	end component fsm_states;
 
@@ -171,7 +174,7 @@ begin
 	  engine_enabled_s               => engine_enabled_r,
 	  engine_max_speed_s             => speed_r,
 	  engine_acceleration_s          => engine_acceleration_r,
-	  engine_acceleration_neg_sign_s => KEY2
+	  engine_acceleration_neg_sign_s => engine_acceleration_neg_sign_r
 	);
 
 
@@ -193,7 +196,9 @@ begin
 	  sinking_led_s          => V_R(3),
 	  end_led_s              => V_R(2),
 	  start_led_s            => V_R(1),
-	  sink_led_s             => V_R(0)
+	  sink_led_s             => V_R(0),
+	  engine_acceleration_s => engine_acceleration_r,
+	  engine_acceleration_neg_sign_s => engine_acceleration_neg_sign_r
 	);
 
 	-- fsm_prg_sink_i : fsm_prg_sink
