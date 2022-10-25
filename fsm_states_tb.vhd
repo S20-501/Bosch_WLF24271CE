@@ -49,6 +49,16 @@ ARCHITECTURE fsm_states_tb_arch OF fsm_states_tb IS
       fsm_prg_sink_enabled_s  : out STD_LOGIC := '0';
       sevenseg_value_s  : out charset_vector_t(3 downto 0) );
   END COMPONENT ;
+
+    component fsm_states_tester
+    port (
+      clock                : out std_logic;
+      speed_button_s       : out std_logic;
+      temperature_button_s : out std_logic;
+      start_button_s       : out std_logic
+    );
+    end component fsm_states_tester;
+
 BEGIN
   DUT  : fsm_states
     PORT MAP (
@@ -72,18 +82,12 @@ BEGIN
       fsm_prg_sink_enabled_s   => fsm_prg_sink_enabled_s  ,
       sevenseg_value_s   => sevenseg_value_s   ) ;
 
+      fsm_states_tester_i : fsm_states_tester
+      port map (
+        clock                => clock,
+        speed_button_s       => speed_button_s,
+        temperature_button_s => temperature_button_s,
+        start_button_s       => start_button_s
+      );
 
-
-
-      clock <= not clock after 10 ps;
-
-      speed_button_s <= '1' after 50 ps, '0' after 1 ns,
-        '1' after 21 ns, '0' after 22 ns;
-
-      temperature_button_s <= '1' after 3 ns, '0' after 4 ns,
-        '1' after 24 ns, '0' after 25 ns;
-
-
-      start_button_s <= '1' after 7 ns, '0' after 9 ns, '1' after 14 ns, '0' after 14300 ps,
-                '1' after 18 ns, '0' after 18200 ps;
 END ;

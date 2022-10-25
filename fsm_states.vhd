@@ -377,6 +377,7 @@ begin
             when TIME_DISPLAY_STATE =>
                 if (timer_counter = 0) then
                     time_divider_r <= not time_divider_r;
+                    time_divider_s <= time_divider_r;
 
                     timer_counter <= 16; -- 0.5 s
                 end if;
@@ -385,7 +386,7 @@ begin
                 rtc_enable <= '1';
                 engine_acceleration_neg_sign_s <= '0';
 
-                time_divider_s <= time_divider_r;
+
 
                 sevenseg_value_s(3) <= ' ';
                 sevenseg_value_s(2) <= sevenseg_charset_t'VAL(hour_units_r);
